@@ -43,8 +43,43 @@ button {
 
 <canvas id="foto" hidden></canvas>
 <p id="mensagem"></p>
+<button onclick="enviarFoto()">
+Enviar comprovação
+</button>
+async function enviarFoto() {
+  const canvas = document.getElementById("foto");
 
-<script>
+  if (canvas.hidden) {
+    alert("Tire uma foto primeiro.");
+    return;
+  }
+
+  const dados = new URLSearchParams();
+  dados.set("foto", canvas.toDataURL("image/jpeg", 0.7));
+
+  try {
+    const resposta = await fetch(
+      "https://cabana.app.n8n.cloud/webhook/receber-comprovacao-fotografica",
+      {
+        method: "POST",
+        body: dados
+      }
+    );
+
+    if (!resposta.ok) {
+      throw new Error("Falha no envio");
+    }
+
+    const resultado = await resposta.json();
+
+    document.getElementById("mensagem").textContent =
+      resultado.mensagem;
+
+  } catch (erro) {
+    alert("Erro no envio: " + erro.message);
+  }
+}
+ <script>
 async function abrirCamera() {
   try {
     const video = document.getElementById("camera");
