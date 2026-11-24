@@ -131,7 +131,16 @@ async function enviarFoto() {
   const dados = new URLSearchParams();
 
   dados.set("foto", canvas.toDataURL("image/jpeg", 0.7));
+const parametros = new URLSearchParams(window.location.search);
+const idTarefa = parametros.get("id_tarefa");
 
+if (!idTarefa || !/^[1-9]\d*$/.test(idTarefa)) {
+  mensagem.textContent = "Tarefa não identificada.";
+  botao.disabled = false;
+  return;
+}
+
+dados.set("id_tarefa", idTarefa);
   try {
     const resposta = await fetch(
       "https://cabana.app.n8n.cloud/webhook/receber-comprovacao-fotografica",
